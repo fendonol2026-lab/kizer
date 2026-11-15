@@ -6,7 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +63,7 @@ fun TerminalScreen(onDone: () -> Unit) {
 
     LaunchedEffect(Unit) {
         for (err in errors) {
-            delay(250) // Швидкість появи тексту
+            delay(250)
             text += "$err\n"
         }
         delay(1500)
@@ -73,7 +76,6 @@ fun TerminalScreen(onDone: () -> Unit) {
             .background(Color.Black)
             .padding(16.dp)
     ) {
-        // Текст, що біжить зверху
         Text(
             text = text,
             color = Color.White,
@@ -82,13 +84,12 @@ fun TerminalScreen(onDone: () -> Unit) {
             lineHeight = 18.sp
         )
         
-        // Око та напис по центру
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "( 0_0 )", // Імітація ока текстом
+                text = "( 0_0 )",
                 color = Color.White,
                 fontSize = 48.sp,
                 fontFamily = FontFamily.Monospace,
@@ -119,7 +120,7 @@ fun BlockedScreen(onUnlock: () -> Unit) {
     ) {
         Text(
             text = "***********************************\n" +
-                   "*   FATAL SYSTEM ERROR   *\n" +
+                   "*       FATAL SYSTEM ERROR        *\n" +
                    "***********************************",
             color = Color.White,
             fontFamily = FontFamily.Monospace,
@@ -144,21 +145,18 @@ fun BlockedScreen(onUnlock: () -> Unit) {
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Кнопка у стилі старого терміналу
         Box(
             modifier = Modifier
                 .clickable { onUnlock() }
-                .background(Color.Black)
-                .padding(16.dp)
+                .background(Color.White)
+                .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             Text(
                 text = "[ ENTER ]",
                 color = Color.Black,
-                backgroundColor = Color.White,
                 fontFamily = FontFamily.Monospace,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -169,7 +167,7 @@ fun JokeScreen(onRestart: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White) // Білий екран для контрасту
+            .background(Color.White)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
