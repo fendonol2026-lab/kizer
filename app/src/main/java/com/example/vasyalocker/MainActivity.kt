@@ -4,9 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -34,125 +34,167 @@ fun VasyaLockerApp() {
     var screen by remember { mutableStateOf("terminal") }
 
     when (screen) {
-        "terminal" -> TerminalScreen { screen = "ransom" }
-        "ransom"   -> RansomScreen { screen = "game" }
-        "game"     -> MiniGameScreen { screen = "unlock" }
-        "unlock"   -> UnlockScreen { screen = "joke" }
-        "joke"     -> JokeScreen { screen = "terminal" }
+        "terminal" -> TerminalScreen { screen = "blocked" }
+        "blocked" -> BlockedScreen { screen = "joke" }
+        "joke" -> JokeScreen { screen = "terminal" }
     }
 }
 
 @Composable
 fun TerminalScreen(onDone: () -> Unit) {
-    val lines = remember { mutableStateListOf<String>() }
-    val files = listOf("vasya_photo.jpg", "document.pdf", "music.mp3", "notes.txt")
+    var text by remember { mutableStateOf("") }
+    val errors = listOf(
+        "Boot error: 0x03527737",
+        "Boot error: 0x0266712",
+        "Boot error: 0x02897593",
+        "Boot error: 0x01447812",
+        "Boot error: 0x0150974",
+        "Boot error: 0x03873700",
+        "Memory section at address 0x0424* is locked!",
+        "Service UXCryptor started.",
+        "* Windows blocked!",
+        "\n[!] SYSTEM COMPROMISED...",
+        "[!] ALL FILES ENCRYPTED...",
+        "\nInitializing Ransomware protocol..."
+    )
 
     LaunchedEffect(Unit) {
-        lines += "> Ініціалізація VasyaLocker 3000..."
-        delay(800)
-        files.forEach { f ->
-            lines += "> Шифрую $f → $f.vasya 🔒"
-            delay(1200)
+        for (err in errors) {
+            delay(250) // Швидкість появи тексту
+            text += "$err\n"
         }
-        lines += "> Готово. Файлів зашифровано: ${files.size}"
-        delay(1200)
+        delay(1500)
         onDone()
     }
 
-    LazyColumn(
-        Modifier.fillMaxSize().background(Color.Black).padding(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(16.dp)
     ) {
-        items(lines) { line ->
-            Text(line, color = Color(0xFF00FF00), fontFamily = FontFamily.Monospace, fontSize = 14.sp)
+        // Текст, що біжить зверху
+        Text(
+            text = text,
+            color = Color.White,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 13.sp,
+            lineHeight = 18.sp
+        )
+        
+        // Око та напис по центру
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "( 0_0 )", // Імітація ока текстом
+                color = Color.White,
+                fontSize = 48.sp,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "ВАС ЗАМЕТИЛИ",
+                color = Color.White,
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 4.sp
+            )
         }
     }
 }
 
 @Composable
-fun RansomScreen(onPay: () -> Unit) {
+fun BlockedScreen(onUnlock: () -> Unit) {
     Column(
-        Modifier.fillMaxSize().background(Color(0xFF8B0000)),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("🔒", fontSize = 72.sp)
-        Text("ВАШІ ФАЙЛИ ЗАШИФРОВАНО", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(16.dp))
-        Text("Заплатіть 500 грн, щоб отримати ключ", color = Color.White)
-        Spacer(Modifier.height(32.dp))
-        Button(onClick = onPay) { Text("Отримати ключ 💸") }
-    }
-}
-
-@Composable
-fun MiniGameScreen(onWin: () -> Unit) {
-    val a = remember { (2..9).random() }
-    val b = remember { (2..9).random() }
-    var input by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf(false) }
-
-    Column(
-        Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Доведи, що ти не бот 🤖", fontSize = 20.sp)
-        Spacer(Modifier.height(16.dp))
-        Text("$a + $b = ?", fontSize = 32.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(16.dp))
-        OutlinedTextField(
-            value = input,
-            onValueChange = { input = it.filter { c -> c.isDigit() }; error = false },
-            label = { Text("Відповідь") }
+        Text(
+            text = "***********************************\n" +
+                   "*   FATAL SYSTEM ERROR   *\n" +
+                   "***********************************",
+            color = Color.White,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center
         )
-        if (error) Text("Неправильно 😈", color = Color.Red)
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = {
-            if (input.toIntOrNull() == a + b) onWin() else error = true
-        }) { Text("Перевірити") }
-    }
-}
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Text(
+            text = "ВАШІ ФАЙЛИ ЗАШИФРОВАНО.\n\n" +
+                   "Ключ для розшифровки знаходиться\n" +
+                   "у вашого друга Василя.\n\n" +
+                   "Натисніть [ENTER], щоб почати\n" +
+                   "процес розшифровки.",
+            color = Color.White,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            lineHeight = 24.sp
+        )
 
-@Composable
-fun UnlockScreen(onDone: () -> Unit) {
-    var progress by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(Unit) {
-        while (progress < 1f) {
-            delay(80)
-            progress += 0.02f
+        Spacer(modifier = Modifier.height(48.dp))
+
+        // Кнопка у стилі старого терміналу
+        Box(
+            modifier = Modifier
+                .clickable { onUnlock() }
+                .background(Color.Black)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "[ ENTER ]",
+                color = Color.Black,
+                backgroundColor = Color.White,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
         }
-        onDone()
-    }
-    Column(
-        Modifier.fillMaxSize().background(Color.Black).padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("🔓 Розшифровка...", color = Color.Green, fontSize = 24.sp, fontFamily = FontFamily.Monospace)
-        Spacer(Modifier.height(16.dp))
-        LinearProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.Green
-        )
-        Spacer(Modifier.height(8.dp))
-        Text("${(progress * 100).toInt()}%", color = Color.Green)
     }
 }
 
 @Composable
 fun JokeScreen(onRestart: () -> Unit) {
     Column(
-        Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White) // Білий екран для контрасту
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("😂", fontSize = 96.sp)
-        Text("ЖАРТ!", fontSize = 40.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "ЖАРТ! 😂",
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            fontFamily = FontFamily.Monospace
+        )
         Spacer(Modifier.height(16.dp))
-        Text("Василь тебе не зашифрував.", fontSize = 18.sp)
-        Text("Твої файли в безпеці 😎", fontSize = 18.sp)
+        Text(
+            text = "Це просто симуляція.\nВаші файли в безпеці.\nНічого не зашифровано.",
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
+            color = Color.Black,
+            fontFamily = FontFamily.Monospace
+        )
         Spacer(Modifier.height(32.dp))
-        Button(onClick = onRestart) { Text("Ще раз 🔁") }
+        Button(
+            onClick = onRestart,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+        ) {
+            Text("ЗАПУСТИТИ ЗНОВУ", color = Color.White, fontFamily = FontFamily.Monospace)
+        }
     }
 }
