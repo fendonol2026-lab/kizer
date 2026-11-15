@@ -38,7 +38,7 @@ fun VasyaLockerApp() {
 
     when (screen) {
         "boot" -> BootScreen { screen = "ransom" }
-        "ransom" -> RansomScreen() // Більше ніяких переходів далі
+        "ransom" -> RansomScreen() // Більше ніяких екранів, тільки вірус
     }
 }
 
@@ -114,7 +114,7 @@ fun RansomScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(if (isError) Color.Red else blueBg) // Ефект помилки
+            .background(if (isError) Color.Red else blueBg) // Червоний спалах при натисканні
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -196,13 +196,13 @@ fun RansomScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = ,
+                    text = "Current PC: DESKTOP-V6C91JC",
                     color = Color.White,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp
                 )
                 
-                // Кнопка Enter з імітацією помилки
+                // Кнопка Enter
                 Box(
                     modifier = Modifier
                         .clickable {
@@ -222,12 +222,12 @@ fun RansomScreen() {
         }
     }
 
-    // Таймер, який повертає синій колір через 0.5 секунди після натискання
+    // Таймер для ефекту помилки (спалах червоним і очищення поля)
     if (isError) {
         LaunchedEffect(Unit) {
             delay(500)
             isError = false
-            inputText = "" // Очищає поле вводу
+            inputText = "" 
         }
     }
 }
